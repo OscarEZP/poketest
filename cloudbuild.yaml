@@ -1,4 +1,5 @@
 steps:
+  # 1) Renderizar backend/app.yaml con IP privada de Redis + conector VPC
   - name: gcr.io/cloud-builders/gcloud
     id: "Render app.yaml"
     entrypoint: bash
@@ -7,21 +8,27 @@ steps:
       - |
         set -euo pipefail
         REDIS_HOST=$(gcloud redis instances describe ${_REDIS_INSTANCE} --region ${_REGION} --format='value(host)')
-        CONNECTOR_FULL="projects/${PROJECT_ID}/locations/${_REGION}/connectors/${_CONNECTOR_NAME}"
         sed -e "s/REDIS_HOST_PLACEHOLDER/${REDIS_HOST}/g" \
-            -e "s#projects/PROJECT_ID/locations/REGION/connectors/CONNECTOR_NAME#${CONNECTOR_FULL}#g" \
-            app.template.yaml > app.yaml
-        echo "app.yaml generado:"
-        cat app.yaml
+            -e "s#VPC_CONNECTOR_FULL_PLACEHOLDER#${_VPC_CONNECTOR}#g" \
+            app.template.yaml > backend/app.yaml
+        echo "===== backend/app.yaml ====="
+        cat backend/app.yaml
+
+  - name: gcr.io/cloud-builders/npm
+    dir: "backend"
+    args: ["ci"]
+  - name: gcr.io/cloud-builders/npm
+    dir: "backend"
+    args: ["run","build"]
 
   - name: gcr.io/cloud-builders/gcloud
-    id: "gcloud app deploy"
-    args: ["app", "deploy", "app.yaml", "--quiet"]
+    id: "Deploy App Engine"
+    args: ["app","deploy","backend/app.yaml","--quiet"]
 
 substitutions:
   _REGION: "europe-west1"
-  _CONNECTOR_NAME: "app-connector"
   _REDIS_INSTANCE: "app-redis"
+  _VPC_CONNECTOR: "projects/$PROJECT_ID/locations/europe-west1/connectors/app-connector"
 
 options:
   logging: CLOUD_LOGGING_ONLY

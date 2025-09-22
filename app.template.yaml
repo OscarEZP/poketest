@@ -1,14 +1,16 @@
 runtime: nodejs20
-service: default
+service: poketest
 
 handlers:
   - url: /.*
     script: auto
 
 env_variables:
+  POKEAPI_BASE: "https://pokeapi.co/api/v2"
+  CACHE_TTL_SECONDS: "300"
   REDIS_HOST: "REDIS_HOST_PLACEHOLDER"
   REDIS_PORT: "6379"
 
 vpc_access_connector:
-  name: "projects/PROJECT_ID/locations/REGION/connectors/CONNECTOR_NAME"
-  egress_setting: "PRIVATE_RANGES_ONLY" 
+  name: "VPC_CONNECTOR_FULL_PLACEHOLDER"
+  egress_setting: "PRIVATE_RANGES_ONLY"

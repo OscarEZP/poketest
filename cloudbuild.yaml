@@ -4,26 +4,49 @@ steps:
     id: "Render app.yaml"
     entrypoint: bash
     args:
-      - -c
+      - -lc
       - |
         set -euo pipefail
-        REDIS_HOST=$(gcloud redis instances describe ${_REDIS_INSTANCE} --region ${_REGION} --format='value(host)')
-        sed -e "s/REDIS_HOST_PLACEHOLDER/${_REDIS_HOST}/g" \
+        # Intenta resolver la IP privada de Redis; si falla, usa el sustituto _REDIS_HOST (si viene)
+        REDIS_HOST="$(gcloud redis instances describe "${_REDIS_INSTANCE}" --region "${_REGION}" --format='value(host)' || true)"
+        if [ -z "${REDIS_HOST}" ] && [ -n "${_REDIS_HOST:-}" ]; then
+          REDIS_HOST="${_REDIS_HOST}"
+        fi
+        if [ -z "${REDIS_HOST}" ]; then
+          echo "No se pudo resolver REDIS_HOST. Revisa _REDIS_INSTANCE/_REGION o define _REDIS_HOST."
+          exit 1
+        fi
+
+        sed -e "s/REDIS_HOST_PLACEHOLDER/${REDIS_HOST}/g" \
             -e "s#VPC_CONNECTOR_FULL_PLACEHOLDER#${_VPC_CONNECTOR}#g" \
             app.template.yaml > backend/app.yaml
+
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  - name: gcr.io/cloud-builders/npm
+  # 2) Instalar dependencias con Node 20
+  - name: gcr.io/cloud-builders/node:20
+    id: "npm ci"
     dir: "backend"
-    args: ["ci"]
-  - name: gcr.io/cloud-builders/npm
-    dir: "backend"
-    args: ["run","build"]
+    entrypoint: npm
+    args: ["ci", "--no-audit", "--no-fund"]
 
+  # 3) Build
+  - name: gcr.io/cloud-builders/node:20
+    id: "npm run build"
+    dir: "backend"
+    entrypoint: npm
+    args: ["run", "build"]
+
+  # 4) Deploy a App Engine Standard
   - name: gcr.io/cloud-builders/gcloud
     id: "Deploy App Engine"
-    args: ["app","deploy","backend/app.yaml","--quiet"]
+    args:
+      - app
+      - deploy
+      - backend/app.yaml
+      - --quiet
+      - --project=${PROJECT_ID}
 
 substitutions:
   _REGION: "europe-west1"
@@ -33,5 +56,3 @@ substitutions:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
-

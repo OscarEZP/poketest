@@ -12,5 +12,6 @@ env_variables:
   REDIS_PORT: "6379"
 
 vpc_access_connector:
-  name: "VPC_CONNECTOR_FULL_PLACEHOLDER"
-  egress_setting: "PRIVATE_RANGES_ONLY"
+  name: "projects/maquicontrol-90a19/locations/europe-west1/connectors/app-connector"
+  egress_setting: "private-ranges-only"
+

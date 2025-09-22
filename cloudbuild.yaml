@@ -28,7 +28,7 @@ steps:
 substitutions:
   _REGION: "europe-west1"
   _REDIS_INSTANCE: "app-redis"
-  _VPC_CONNECTOR: "projects/$PROJECT_ID/locations/europe-west1/connectors/app-connector"
+  _VPC_CONNECTOR: "projects/maquicontrol-90a19/locations/europe-west1/connectors/app-connector"
 
 options:
   logging: CLOUD_LOGGING_ONLY

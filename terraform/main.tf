@@ -37,7 +37,16 @@ resource "google_vpc_access_connector" "connector" {
   region        = var.region
   network       = google_compute_network.vpc.name
   ip_cidr_range = var.connector_cidr
-  depends_on    = [google_project_service.services]
+  depends_on    = [
+    google_project_service.services,
+    google_compute_network.vpc
+  ]
+}
+
+resource "google_project_iam_member" "cloudbuild_redis_viewer" {
+  project = var.project_id
+  role    = "roles/redis.viewer"
+  member  = "serviceAccount:${local.cloud_build_sa}"
 }
 
 resource "google_redis_instance" "redis" {
@@ -46,7 +55,13 @@ resource "google_redis_instance" "redis" {
   tier               = "BASIC"
   memory_size_gb     = var.redis_size_gb
   authorized_network = google_compute_network.vpc.id
-  # opcional: redis_version, read_replicas_mode, auth_enabled, transit encryption, etc.
+
+  # recomendado:
+  redis_version      = "REDIS_7_0"
+
+  # Opcional si quieres habilitar AUTH/TLS (requiere cambios en tu app):
+  # auth_enabled       = true
+  # transit_encryption_mode = "SERVER_AUTHENTICATION" # TLS entre cliente y Redis
   depends_on         = [google_project_service.services]
 }
 
@@ -72,6 +87,8 @@ resource "google_project_iam_member" "cloudbuild_sa_user" {
   project = var.project_id
   role    = "roles/iam.serviceAccountUser"
   member  = "serviceAccount:${local.cloud_build_sa}"
+
+  
 }
 
 resource "google_cloudbuild_trigger" "github_trigger" {

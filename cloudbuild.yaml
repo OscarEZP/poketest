@@ -14,10 +14,10 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  - name: node:20
+  - name: node
     id: "pin nestjs/axios v2"
     dir: backend
-    entrypoint: bash
+    entrypoint: npm
     args:
       - -lc
       - |
@@ -27,13 +27,13 @@ steps:
         rm -f package-lock.json
         npm install --no-audit --no-fund
 
-  - name: node:20
+  - name: node
     id: "npm ci"
     dir: backend
     entrypoint: npm
     args: ["ci", "--no-audit", "--no-fund"]
 
-  - name: node:20
+  - name: node:latest
     id: "npm run build"
     dir: backend
     entrypoint: npm

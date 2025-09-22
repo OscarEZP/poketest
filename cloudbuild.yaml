@@ -1,0 +1,27 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    id: "Render app.yaml"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        REDIS_HOST=$(gcloud redis instances describe ${_REDIS_INSTANCE} --region ${_REGION} --format='value(host)')
+        CONNECTOR_FULL="projects/${PROJECT_ID}/locations/${_REGION}/connectors/${_CONNECTOR_NAME}"
+        sed -e "s/REDIS_HOST_PLACEHOLDER/${REDIS_HOST}/g" \
+            -e "s#projects/PROJECT_ID/locations/REGION/connectors/CONNECTOR_NAME#${CONNECTOR_FULL}#g" \
+            app.template.yaml > app.yaml
+        echo "app.yaml generado:"
+        cat app.yaml
+
+  - name: gcr.io/cloud-builders/gcloud
+    id: "gcloud app deploy"
+    args: ["app", "deploy", "app.yaml", "--quiet"]
+
+substitutions:
+  _REGION: "europe-west1"
+  _CONNECTOR_NAME: "app-connector"
+  _REDIS_INSTANCE: "app-redis"
+
+options:
+  logging: CLOUD_LOGGING_ONLY

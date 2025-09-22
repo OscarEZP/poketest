@@ -16,24 +16,22 @@ import { TOKENS } from './common/tokens';
   imports: [
     AppConfigModule,
     ThrottlerModule.forRoot([{
-      ttl: 60_000, // 1 min
-      limit: 100,  // 100 req/min/IP
+      ttl: 60_000,
+      limit: 100,
     }]),
 
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => {
-        const { redisStore } = await import('cache-manager-redis-yet');
-        return {
-          store: redisStore,
-          socket: {
-            host: process.env.REDIS_HOST,
-            port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
-          },
-          password: process.env.REDIS_PASSWORD,
-          ttl: parseInt(process.env.CACHE_TTL_SECONDS ?? '300', 10),
-        };
-      },
+        const ttl = parseInt(process.env.CACHE_TTL_SECONDS ?? '300', 10);
+        const host = process.env.REDIS_HOST;
+        const port = parseInt(process.env.REDIS_PORT ?? '6379', 10);
+        if (host) {
+          const { redisStore } = await import('cache-manager-redis-yet');
+          return { store: redisStore, socket: { host, port }, ttl };
+        }
+        return { ttl, max: 1000 };
+      }
     }),
     HttpModule.register({}),
   ],

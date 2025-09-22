@@ -9,7 +9,7 @@ variable "region" {
 
 variable "app_engine_location" {
   type    = string
-  default = "europe-west"  # OJO: App Engine usa 'location_id' (sin dígito)
+  default = "europe-west1"  # OJO: App Engine usa 'location_id' (sin dígito)
 }
 
 variable "network_name" {

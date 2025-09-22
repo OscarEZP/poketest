@@ -37,11 +37,22 @@ resource "google_vpc_access_connector" "connector" {
   region        = var.region
   network       = google_compute_network.vpc.name
   ip_cidr_range = var.connector_cidr
-  depends_on    = [
+
+  # alternativa por instancias:
+  min_instances = 2     # opcional
+  max_instances = 3     # requerido si usas instancias
+
+  depends_on = [
     google_project_service.services,
     google_compute_network.vpc
   ]
+
+  timeouts {
+    create = "20m"
+    delete = "20m"
+  }
 }
+
 
 resource "google_project_iam_member" "cloudbuild_redis_viewer" {
   project = var.project_id

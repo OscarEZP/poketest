@@ -14,29 +14,21 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  # 2) Instalar dependencias con Node 20
-  - name: gcr.io/cloud-builders/node:20
+  - name: node:20
     id: "npm ci"
-    dir: "backend"
+    dir: backend
     entrypoint: npm
     args: ["ci", "--no-audit", "--no-fund"]
 
-  # 3) Build
-  - name: gcr.io/cloud-builders/node:20
+  - name: node:20
     id: "npm run build"
-    dir: "backend"
+    dir: backend
     entrypoint: npm
     args: ["run", "build"]
 
-  # 4) Deploy a App Engine Standard
   - name: gcr.io/cloud-builders/gcloud
     id: "Deploy App Engine"
-    args:
-      - app
-      - deploy
-      - backend/app.yaml
-      - --quiet
-      - --project=${PROJECT_ID}
+    args: ["app","deploy","backend/app.yaml","--quiet","--project=${PROJECT_ID}"]
 
 substitutions:
   _REGION: "europe-west1"

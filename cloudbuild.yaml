@@ -14,13 +14,13 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  - name: node
+  - name: node:latest
     id: "npm ci"
     dir: backend
     entrypoint: npm
     args: ["ci", "--no-audit", "--no-fund"]
 
-  - name: node
+  - name: node:latest
     id: "npm run build"
     dir: backend
     entrypoint: npm

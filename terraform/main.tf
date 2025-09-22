@@ -75,13 +75,14 @@ resource "google_project_iam_member" "cloudbuild_sa_user" {
 }
 
 resource "google_cloudbuild_trigger" "github_trigger" {
+  count = var.create_github_trigger ? 1 : 0
+
   name = "appengine-deploy-on-main"
   github {
     owner = var.github_owner
     name  = var.github_repo
     push { branch = var.github_branch_regex }
   }
-
-  filename = "cloudbuild.yaml"  # usará el del repo raíz
+  filename  = "cloudbuild.yaml"
   depends_on = [google_project_service.services]
 }

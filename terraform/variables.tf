@@ -36,3 +36,23 @@ variable "redis_size_gb" {
   type    = number
   default = 1
 }
+
+variable "create_github_trigger" {
+  type    = bool
+  default = false
+}
+
+variable "github_owner" {
+  type    = string
+  default = ""
+}
+
+variable "github_repo" {
+  type    = string
+  default = ""
+}
+
+variable "github_branch_regex" {
+  type    = string
+  default = "^main$"
+}

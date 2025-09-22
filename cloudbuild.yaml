@@ -7,17 +7,7 @@ steps:
       - -lc
       - |
         set -euo pipefail
-        # Intenta resolver la IP privada de Redis; si falla, usa el sustituto _REDIS_HOST (si viene)
-        REDIS_HOST="$(gcloud redis instances describe "${_REDIS_INSTANCE}" --region "${_REGION}" --format='value(host)' || true)"
-        if [ -z "${REDIS_HOST}" ] && [ -n "${_REDIS_HOST:-}" ]; then
-          REDIS_HOST="${_REDIS_HOST}"
-        fi
-        if [ -z "${REDIS_HOST}" ]; then
-          echo "No se pudo resolver REDIS_HOST. Revisa _REDIS_INSTANCE/_REGION o define _REDIS_HOST."
-          exit 1
-        fi
-
-        sed -e "s/REDIS_HOST_PLACEHOLDER/${REDIS_HOST}/g" \
+        sed -e "s/REDIS_HOST_PLACEHOLDER/${_REDIS_HOST}/g" \
             -e "s#VPC_CONNECTOR_FULL_PLACEHOLDER#${_VPC_CONNECTOR}#g" \
             app.template.yaml > backend/app.yaml
 

@@ -14,7 +14,7 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  - name: node:latest
+  - name: gcr.io/cloud-builders/npm:node-20
     id: "pin nestjs/axios v2"
     dir: backend
     entrypoint: bash
@@ -27,13 +27,13 @@ steps:
         rm -f package-lock.json
         npm install --no-audit --no-fund
 
-  - name: node:latest
+  - name: gcr.io/cloud-builders/npm:node-20
     id: "npm ci"
     dir: backend
     entrypoint: npm
     args: ["ci", "--no-audit", "--no-fund"]
 
-  - name: node:latest
+  - name: gcr.io/cloud-builders/npm:node-20
     id: "npm run build"
     dir: backend
     entrypoint: npm

@@ -8,7 +8,7 @@ steps:
       - |
         set -euo pipefail
         REDIS_HOST=$(gcloud redis instances describe ${_REDIS_INSTANCE} --region ${_REGION} --format='value(host)')
-        sed -e "s/REDIS_HOST_PLACEHOLDER/${REDIS_HOST}/g" \
+        sed -e "s/REDIS_HOST_PLACEHOLDER/${_REDIS_HOST}/g" \
             -e "s#VPC_CONNECTOR_FULL_PLACEHOLDER#${_VPC_CONNECTOR}#g" \
             app.template.yaml > backend/app.yaml
         echo "===== backend/app.yaml ====="
@@ -29,6 +29,9 @@ substitutions:
   _REGION: "europe-west1"
   _REDIS_INSTANCE: "app-redis"
   _VPC_CONNECTOR: "projects/maquicontrol-90a19/locations/europe-west1/connectors/app-connector"
+  _REDIS_HOST: "10.100.159.43"
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+

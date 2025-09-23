@@ -14,22 +14,6 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
-  - name: gcr.io/cloud-builders/gcloud
-    id: "Check VPC connector READY"
-    entrypoint: bash
-    args:
-      - -lc
-      - |
-        set -euo pipefail
-        CONNECTOR_NAME="$(basename "${_VPC_CONNECTOR}")"
-        STATE="$(gcloud compute networks vpc-access connectors describe "${CONNECTOR_NAME}" \
-          --region "${_REGION}" --format='value(state)')"
-        echo "Connector state: ${STATE}"
-        if [ "${STATE}" != "READY" ]; then
-          gcloud compute networks vpc-access connectors describe "${CONNECTOR_NAME}" --region "${_REGION}"
-          exit 1
-        fi
-
   - name: node
     id: "npm ci"
     dir: backend

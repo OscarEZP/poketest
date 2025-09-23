@@ -1,4 +1,16 @@
 steps:
+  # 1) Renderizar backend/app.yaml con IP privada de Redis + conector VPC
+  - name: gcr.io/cloud-builders/gcloud
+    id: "Render app.yaml"
+    entrypoint: bash
+    args:
+      - -lc
+      - |
+        set -euo pipefail
+        cp app.template.yaml backend/app.yaml
+        echo "===== backend/app.yaml ====="
+        cat backend/app.yaml
+
   - name: node
     id: "npm ci"
     dir: backend

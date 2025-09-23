@@ -1,0 +1,20 @@
+steps:
+  - name: node
+    id: "npm ci"
+    dir: backend
+    entrypoint: npm
+    args: ["ci", "--no-audit", "--no-fund"]
+
+  - name: node:latest
+    id: "npm run build"
+    dir: backend
+    entrypoint: npm
+    args: ["run", "build"]
+
+  - name: gcr.io/cloud-builders/gcloud
+    id: "Deploy App Engine"
+    args: ["app","deploy","app.yaml","--quiet","--project=${PROJECT_ID}"]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+

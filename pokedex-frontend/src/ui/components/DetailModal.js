@@ -1,0 +1,6 @@
+import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+export default function DetailModal({ open, onClose, name, id, types, sprites, height, weight }) {
+    if (!open)
+        return null;
+    return (_jsx("div", { className: "fixed inset-0 bg-black/40 grid place-items-center p-4", onClick: onClose, children: _jsxs("div", { className: "bg-white rounded-2xl p-6 w-full max-w-md shadow-xl", onClick: (e) => e.stopPropagation(), children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("h2", { className: "text-lg font-bold capitalize", children: [name, " ", _jsxs("span", { className: "text-slate-500", children: ["#", id] })] }), _jsx("button", { onClick: onClose, className: "text-slate-500 hover:text-slate-800", "aria-label": "Cerrar", children: "\u2715" })] }), _jsxs("div", { className: "mt-4 flex gap-4 items-center", children: [_jsx("img", { src: sprites?.front || "", alt: name, className: "w-32 h-32 object-contain" }), _jsxs("div", { className: "text-sm", children: [_jsxs("div", { children: [_jsx("b", { children: "Tipos:" }), " ", types.join(", ")] }), _jsxs("div", { children: [_jsx("b", { children: "Altura:" }), " ", height] }), _jsxs("div", { children: [_jsx("b", { children: "Peso:" }), " ", weight] })] })] })] }) }));
+}

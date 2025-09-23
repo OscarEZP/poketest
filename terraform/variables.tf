@@ -4,12 +4,12 @@ variable "project_id" {
 
 variable "region" {
   type    = string
-  default = "europe-west1" # Redis/Conector VPC (región zonal)
+  default = "europe-west1" 
 }
 
 variable "app_engine_location" {
   type    = string
-  default = "europe-west1"  # OJO: App Engine usa 'location_id' (sin dígito)
+  default = "europe-west1" 
 }
 
 variable "network_name" {

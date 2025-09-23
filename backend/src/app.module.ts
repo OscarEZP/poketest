@@ -9,8 +9,8 @@ import { PokeController } from './interfaces/http/poke.controller';
 
 import { PokeService } from './core/services/poke.service';
 import { PokeApiClient } from './infra/http/pokeapi.client';
-import { CacheAdapterService } from './infra/cache/cache.service';
 import { TOKENS } from './common/tokens';
+import { RedisModule } from './infra/cache/redis.module';
 
 @Module({
   imports: [
@@ -34,10 +34,10 @@ import { TOKENS } from './common/tokens';
       }
     }),
     HttpModule.register({}),
+    RedisModule
   ],
   controllers: [HealthController, PokeController],
-  providers: [PokeService, PokeApiClient, CacheAdapterService,
-    { provide: TOKENS.POKE_PROVIDER, useExisting: PokeApiClient },
-    { provide: TOKENS.CACHE_PROVIDER, useExisting: CacheAdapterService },],
+  providers: [PokeService, PokeApiClient,
+    { provide: TOKENS.POKE_PROVIDER, useExisting: PokeApiClient },],
 })
 export class AppModule {}

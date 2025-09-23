@@ -8,8 +8,7 @@ handlers:
 env_variables:
   POKEAPI_BASE: "https://pokeapi.co/api/v2"
   CACHE_TTL_SECONDS: "300"
-  REDIS_HOST: "REDIS_HOST_PLACEHOLDER"
-  REDIS_PORT: "6379"
+  REDIS_URL: "redis://default:bVBwKU6ocaOoQJfLjmYuFHbpSECSHFaw@redis-10413.c304.europe-west1-2.gce.redns.redis-cloud.com:10413"
 
 vpc_access_connector:
   name: "projects/maquicontrol-90a19/locations/europe-west1/connectors/app-connector"

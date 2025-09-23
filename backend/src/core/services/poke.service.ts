@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IPokeProvider, PokemonListItem, PokemonListResult } from '../ports/poke.provider';
-import { ICacheProvider } from '../ports/cache.provider';
 import { TOKENS } from '../../common/tokens';
+import { RedisService } from 'src/infra/cache/redis.service';
 
 @Injectable()
 export class PokeService {
@@ -10,7 +10,7 @@ export class PokeService {
 
   constructor(
     @Inject(TOKENS.POKE_PROVIDER) private provider: IPokeProvider,
-    @Inject(TOKENS.CACHE_PROVIDER) private cache: ICacheProvider,
+    private readonly cache: RedisService,
   ) {}
 
   private toOffset(page: number, pageSize: number) {

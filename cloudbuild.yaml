@@ -14,6 +14,22 @@ steps:
         echo "===== backend/app.yaml ====="
         cat backend/app.yaml
 
+  - name: gcr.io/cloud-builders/gcloud
+    id: "Check VPC connector READY"
+    entrypoint: bash
+    args:
+      - -lc
+      - |
+        set -euo pipefail
+        CONNECTOR_NAME="$(basename "${_VPC_CONNECTOR}")"
+        STATE="$(gcloud compute networks vpc-access connectors describe "${CONNECTOR_NAME}" \
+          --region "${_REGION}" --format='value(state)')"
+        echo "Connector state: ${STATE}"
+        if [ "${STATE}" != "READY" ]; then
+          gcloud compute networks vpc-access connectors describe "${CONNECTOR_NAME}" --region "${_REGION}"
+          exit 1
+        fi
+
   - name: node
     id: "npm ci"
     dir: backend
@@ -34,7 +50,8 @@ substitutions:
   _REGION: "europe-west1"
   _REDIS_INSTANCE: "app-redis"
   _VPC_CONNECTOR: "projects/maquicontrol-90a19/locations/europe-west1/connectors/app-connector"
-  _REDIS_HOST: "10.100.159.43"
+  _REDIS_HOST: "redis://default:bVBwKU6ocaOoQJfLjmYuFHbpSECSHFaw@redis-10413.c304.europe-west1-2.gce.redns.redis-cloud.com:10413"
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
